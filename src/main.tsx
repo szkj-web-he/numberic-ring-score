@@ -6,11 +6,14 @@
  */
 /* <------------------------------------ **** DEPENDENCE IMPORT START **** ------------------------------------ */
 /** This section will include all the necessary dependence for this tsx file */
-import React, { useState } from "react";
-import { comms } from ".";
+import { ScrollComponent } from "Components/Scroll";
+import { useMapOptions } from "Hooks/useOptions";
+import React, { Fragment, useState } from "react";
+import { Row } from "./Components/Row";
 import Item from "./item";
-import { OptionProps } from "./unit";
-import { useEffect } from "react";
+import { OptionProps } from "./type";
+import { useMemo } from "react";
+import { comms } from "index";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
 /* <------------------------------------ **** INTERFACE START **** ------------------------------------ */
 /** This section will include all the interface for this tsx file */
@@ -21,33 +24,76 @@ const Temp: React.FC = () => {
     /************* This section will include this component HOOK function *************/
     const [activeCode, setActiveCode] = useState<OptionProps[]>();
 
+    const [options, isMobile] = useMapOptions();
+
+    const colorList = useMemo(() => {
+        const list = comms.config.options ?? [];
+        let r = Math.round(Math.random() * 245 + 10);
+        let g = Math.round(Math.random() * 150 + 100);
+        let b = Math.round(Math.random() * 150);
+
+        let increment = 10;
+        return list.map(() => {
+            const rgb = [r, g, b];
+
+            const copyR = r;
+            r = g;
+            g = b;
+            b = copyR;
+            if (r + increment < 250 && r + increment > 10) {
+                r += increment;
+                return rgb;
+            }
+
+            if (g + increment < 200 && g + increment > 100) {
+                g += increment;
+                return rgb;
+            }
+
+            if (b + increment < 150 && b > 0) {
+                b += increment;
+                return rgb;
+            }
+
+            const copyB = b;
+            b = g;
+            g = copyB;
+            increment = -10;
+
+            rgb[1] = g;
+            rgb[2] = b;
+
+            return rgb;
+        });
+    }, []);
+
     /* <------------------------------------ **** STATE END **** ------------------------------------ */
     /* <------------------------------------ **** PARAMETER START **** ------------------------------------ */
     /************* This section will include this component parameter *************/
-    useEffect(() => {
-        const list = comms.config.options ?? [];
-        const arr = activeCode ?? [];
+    // useEffect(() => {
+    //     const list = comms.config.options ?? [];
+    //     const arr = activeCode ?? [];
 
-        const state: Record<string, "0" | "1"> = {};
+    //     const state: Record<string, "0" | "1"> = {};
 
-        for (let i = 0; i < list.length; i++) {
-            let status = false;
-            const data = list[i];
+    //     for (let i = 0; i < list.length; i++) {
+    //         let status = false;
+    //         const data = list[i];
 
-            for (let j = 0; j < arr.length; ) {
-                const item = arr[j];
-                if (item.code === data.code) {
-                    status = true;
-                    j = arr.length;
-                } else {
-                    ++j;
-                }
-            }
+    //         for (let j = 0; j < arr.length; ) {
+    //             const item = arr[j];
+    //             if (item.code === data.code) {
+    //                 status = true;
+    //                 j = arr.length;
+    //             } else {
+    //                 ++j;
+    //             }
+    //         }
 
-            state[data.code] = status ? "1" : "0";
-        }
-        comms.state = state;
-    }, [activeCode]);
+    //         state[data.code] = status ? "1" : "0";
+    //     }
+    //     comms.state = state;
+    // }, [activeCode]);
 
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
@@ -75,27 +121,42 @@ const Temp: React.FC = () => {
         });
     };
 
-    const list = comms.config.options ?? [];
-
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
     return (
-        <div className="main">
-            <div className="total">
-                共<span className="totalValue">{list.length}</span>项
-            </div>
-            <div className="mainContainer">
-                {list.map((item) => {
+        <ScrollComponent>
+            <div className={`main${isMobile ? " mobile" : ""}`}>
+                {options.map((items, index) => {
                     return (
-                        <Item
-                            data={{ ...item }}
-                            key={item.code}
-                            active={activeCode?.some((data) => data.code === item.code)}
-                            onClick={() => handleClick(item)}
-                        />
+                        <Fragment key={index}>
+                            <Row>
+                                {items.map((item, n) => {
+                                    return (
+                                        <Item
+                                            data={{ ...item }}
+                                            key={item.code}
+                                            active={activeCode?.some(
+                                                (data) => data.code === item.code,
+                                            )}
+                                            color={
+                                                colorList[index * items.length + n] as [
+                                                    number,
+                                                    number,
+                                                    number,
+                                                ]
+                                            }
+                                            onClick={() => handleClick(item)}
+                                            span={item.span as 1}
+                                            mobileStatus={isMobile}
+                                        />
+                                    );
+                                })}
+                            </Row>
+                            {index < options.length - 1 && !isMobile && <div className="hr" />}
+                        </Fragment>
                     );
                 })}
             </div>
-        </div>
+        </ScrollComponent>
     );
 };
 /* <------------------------------------ **** FUNCTION COMPONENT END **** ------------------------------------ */

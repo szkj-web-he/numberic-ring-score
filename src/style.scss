@@ -29,11 +29,11 @@ body {
     flex-flow: row wrap;
     width: 100%;
     flex: 0 0 auto;
-    margin-bottom: 24px;
+    margin-bottom: 40px;
 }
 
 .questionContent {
-    color: #a9661c;
+    color: #212121;
     font-family: $fontFamily;
     font-style: normal;
     font-size: 20px;
@@ -44,11 +44,75 @@ body {
 }
 
 .questionDes {
-    color: #a9661c;
+    color: #757575;
     font-family: $fontFamily;
     font-style: normal;
     font-weight: 400;
     font-size: 20px;
     line-height: 30px;
     letter-spacing: 0.2px;
+}
+
+.main {
+    width: 100%;
+    &.mobile {
+        display: flex;
+        align-items: flex-start;
+        flex-flow: row nowrap;
+        justify-content: flex-start;
+    }
+}
+
+.item {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-flow: column nowrap;
+}
+
+.hr {
+    background-color: #f9fbfb;
+    height: 4px;
+    width: 100%;
+    margin: 40px 0;
+}
+
+.item_name {
+    font-family: $fontFamily;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.2px;
+    color: #4d4d4d;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 12px;
+}
+
+.item_content {
+    position: relative;
+    line-height: 0;
+}
+
+.item_value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: $fontFamily;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0.2px;
+    color: #bdbdbd;
+}
+
+.item_canvas {
+    cursor: pointer;
 }

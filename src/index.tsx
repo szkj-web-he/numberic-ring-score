@@ -5,7 +5,8 @@ import "./style.scss";
 import { ConfigYML, PluginComms } from "@possie-engine/dr-plugin-sdk";
 import Header from "./header";
 import MainContent from "./main";
-import { ScrollComponent } from "./Scroll";
+import { ScrollComponent } from "./Components/Scroll";
+import { OptionProps } from "./type";
 
 export const comms = new PluginComms({
     defaultConfig: new ConfigYML(),
@@ -14,7 +15,7 @@ export const comms = new PluginComms({
         question?: string;
         instruction?: string;
         optionsInstruction?: string;
-        options?: Array<{ code: string; content: string }>;
+        options?: Array<OptionProps>;
     };
     state: unknown;
     renderOnReady: (res: React.ReactNode) => void;
