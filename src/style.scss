@@ -115,4 +115,18 @@ body {
 
 .item_canvas {
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    appearance: none;
+}
+
+.optionsRow {
+    margin-left: 40px;
+    width: auto !important;
+    &:first-of-type {
+        margin-left: 0;
+    }
+}
+
+.mainScroll {
+    height: calc(100% - 30px - 40px);
 }

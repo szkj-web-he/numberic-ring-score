@@ -8,12 +8,12 @@
 /** This section will include all the necessary dependence for this tsx file */
 import { ScrollComponent } from "Components/Scroll";
 import { useMapOptions } from "Hooks/useOptions";
-import React, { Fragment, useState } from "react";
+import { comms } from "index";
+import React, { Fragment, useMemo, useState } from "react";
 import { Row } from "./Components/Row";
 import Item from "./item";
 import { OptionProps } from "./type";
-import { useMemo } from "react";
-import { comms } from "index";
+import { useEffect } from "react";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
 /* <------------------------------------ **** INTERFACE START **** ------------------------------------ */
 /** This section will include all the interface for this tsx file */
@@ -67,33 +67,22 @@ const Temp: React.FC = () => {
         });
     }, []);
 
+    const [state, setState] = useState(() => {
+        const arr = comms.config.options ?? [];
+        const data: Record<string, null | number> = {};
+        for (let i = 0; i < arr.length; i++) {
+            data[arr[i].code] = null;
+        }
+        return data;
+    });
+
     /* <------------------------------------ **** STATE END **** ------------------------------------ */
     /* <------------------------------------ **** PARAMETER START **** ------------------------------------ */
     /************* This section will include this component parameter *************/
-    // useEffect(() => {
-    //     const list = comms.config.options ?? [];
-    //     const arr = activeCode ?? [];
 
-    //     const state: Record<string, "0" | "1"> = {};
-
-    //     for (let i = 0; i < list.length; i++) {
-    //         let status = false;
-    //         const data = list[i];
-
-    //         for (let j = 0; j < arr.length; ) {
-    //             const item = arr[j];
-    //             if (item.code === data.code) {
-    //                 status = true;
-    //                 j = arr.length;
-    //             } else {
-    //                 ++j;
-    //             }
-    //         }
-
-    //         state[data.code] = status ? "1" : "0";
-    //     }
-    //     comms.state = state;
-    // }, [activeCode]);
+    useEffect(() => {
+        comms.state = state;
+    }, [state]);
 
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
@@ -123,12 +112,12 @@ const Temp: React.FC = () => {
 
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
     return (
-        <ScrollComponent>
+        <ScrollComponent className="mainScroll">
             <div className={`main${isMobile ? " mobile" : ""}`}>
                 {options.map((items, index) => {
                     return (
                         <Fragment key={index}>
-                            <Row>
+                            <Row className={isMobile ? "optionsRow" : ""}>
                                 {items.map((item, n) => {
                                     return (
                                         <Item
@@ -144,6 +133,14 @@ const Temp: React.FC = () => {
                                                     number,
                                                 ]
                                             }
+                                            score={state[item.code] ?? 0}
+                                            setScore={(res) => {
+                                                setState((pre) => {
+                                                    const data = { ...pre };
+                                                    data[item.code] = res;
+                                                    return { ...data };
+                                                });
+                                            }}
                                             onClick={() => handleClick(item)}
                                             span={item.span as 1}
                                             mobileStatus={isMobile}

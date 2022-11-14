@@ -14,6 +14,7 @@ export const deepCloneData = <T>(data: T): T => {
  * @param ctx
  */
 export const drawRing = (ctx: CanvasRenderingContext2D, border: number): void => {
+    ctx.save();
     const { width, height } = ctx.canvas;
     const margin = 5;
     ctx.beginPath();
@@ -22,6 +23,7 @@ export const drawRing = (ctx: CanvasRenderingContext2D, border: number): void =>
     ctx.arc(width / 2, height / 2, width / 2 - margin - border / 2, 0, Math.PI * 2);
     ctx.closePath();
     ctx.stroke();
+    ctx.restore();
 };
 
 /**
@@ -123,11 +125,12 @@ export const getAngle = (
     return Math.round(((value * (180 / Math.PI)) / 360) * 100) / 100;
 };
 
+export const marginValue = (): number => {
+    return 5;
+};
+
 /**
  * 画弧
- */
-/**
- *
  * @param el canvas
  * @param border border值
  * @param value 画多长 0-1
@@ -150,17 +153,73 @@ export const drawRadian = (
 
     drawRing(ctx, border);
 
-    const margin = 5;
-    ctx.beginPath();
+    if (!value) {
+        return;
+    }
+
+    const margin = marginValue();
     ctx.lineWidth = border;
     ctx.strokeStyle = color;
+    ctx.beginPath();
     ctx.lineCap = "round";
-    ctx.arc(
-        width / 2,
-        height / 2,
-        width / 2 - margin - border / 2,
-        -Math.PI / 2,
-        Math.PI * 2 * value - Math.PI / 2,
-    );
+
+    const r = width / 2 - margin - border / 2;
+    const circumference = 2 * r * Math.PI;
+    //4 这里时bar的宽度除以2
+    const v = (2 * Math.PI) / (circumference / 4);
+    ctx.arc(width / 2, height / 2, r, -Math.PI / 2, Math.PI * 2 * value - Math.PI / 2 - v);
     ctx.stroke();
+};
+
+/**
+ * 画柄
+ * @param el
+ * @param border
+ * @param value
+ */
+export const drawBar = (el: HTMLCanvasElement, border: number, value: number): void => {
+    const ctx = el.getContext("2d");
+
+    if (!ctx) {
+        return;
+    }
+
+    const { width, height } = ctx.canvas;
+    ctx.save();
+
+    const barWidth = 8;
+    const barHeight = border === 16 ? 22 : 20;
+    const radius = 4;
+    const r = width / 2 - marginValue() - border / 2;
+    const rx = width / 2;
+    const ry = height / 2;
+
+    const fn = () => {
+        ctx.fillStyle = "#fff";
+
+        ctx.beginPath();
+        ctx.moveTo(barWidth / 2, -r - border / 2);
+        ctx.lineTo(barWidth / 2, -r - border / 2 + (barHeight - radius * 2));
+        ctx.arc(0, -r - border / 2 + (barHeight - radius * 2), radius, 0, Math.PI);
+        ctx.lineTo(-barWidth / 2, -r - border / 2);
+        ctx.arc(0, -r - border / 2, radius, Math.PI, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+    };
+
+    ctx.translate(rx, ry);
+    ctx.rotate(Math.PI * 2 * value);
+
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = "rgba(26, 26, 26, 0.06)";
+    fn();
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 3;
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "rgba(26, 26, 26, 0.1)";
+    fn();
+
+    ctx.restore();
 };
