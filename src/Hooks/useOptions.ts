@@ -7,11 +7,10 @@ import { useState } from 'react';
  * 就一提多行
  */
 
-import { useMemo, useState } from "react";
-import { useEffect } from "react";
-import { OptionProps } from "../type";
-import { comms } from "..";
+import { useEffect, useMemo, useState } from "react";
 import { deepCloneData } from "unit";
+import { comms } from "..";
+import { OptionProps } from "../type";
 
 export const isMobile = (): boolean => window.matchMedia("(any-pointer:coarse)").matches;
 
@@ -46,21 +45,16 @@ export const useMapOptions = (): [Array<Array<OptionProps & { span?: number }>>,
         const arr = comms.config.options ?? [];
 
         const list: Array<Array<OptionProps & { span: number }>> = [];
-        let index = 0;
+        let index = -1;
 
         const span = cols === 4 ? 3 : 2;
-
         for (let i = 0; i < arr.length; i++) {
             const item = deepCloneData(arr[i]);
-
-            if (i === 0) {
-                list[index] = [{ ...item, span }];
-            } else {
+            if (i % cols) {
                 list[index].push({ ...item, span });
-                if (!(i % cols)) {
-                    ++index;
-                    list[index] = [];
-                }
+            } else {
+                ++index;
+                list[index] = [{ ...item, span }];
             }
         }
         return list;

@@ -128,5 +128,11 @@ body {
 }
 
 .mainScroll {
-    height: calc(100% - 30px - 40px);
+    height: calc(100% - 30px - 40px) !important;
+}
+
+@media screen and (any-pointer: coarse) {
+    .mainScroll {
+        touch-action: pan-x pinch-zoom;
+    }
 }

@@ -7,9 +7,6 @@ import Header from "./header";
 import MainContent from "./main";
 import { OptionProps } from "./type";
 
-import vConsole from "vconsole";
-new vConsole();
-
 export const comms = new PluginComms({
     defaultConfig: new ConfigYML(),
 }) as {

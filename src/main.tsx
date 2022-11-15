@@ -9,11 +9,10 @@
 import { ScrollComponent } from "Components/Scroll";
 import { useMapOptions } from "Hooks/useOptions";
 import { comms } from "index";
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Row } from "./Components/Row";
 import Item from "./item";
 import { OptionProps } from "./type";
-import { useEffect } from "react";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
 /* <------------------------------------ **** INTERFACE START **** ------------------------------------ */
 /** This section will include all the interface for this tsx file */
