@@ -8,7 +8,7 @@ import { useState } from 'react';
  */
 
 import { useEffect, useMemo, useState } from "react";
-import { deepCloneData } from "unit";
+import { deepCloneData } from "../unit";
 import { comms } from "..";
 import { OptionProps } from "../type";
 

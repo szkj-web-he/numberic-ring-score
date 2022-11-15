@@ -132,8 +132,8 @@ const JumpWrap: React.FC<ScrollProps> = ({ children, style, ...props }) => {
                 <div className="floating_button">
                     <div
                         className="toTop_button"
-                        onClick={() => {
-                            if (!topActive) {
+                        onClick={(e) => {
+                            if (!topActive || !e.nativeEvent.cancelable) {
                                 return;
                             }
 
@@ -147,8 +147,8 @@ const JumpWrap: React.FC<ScrollProps> = ({ children, style, ...props }) => {
                     </div>
                     <div
                         className="toBottom_button"
-                        onClick={() => {
-                            if (!bottomActive || isBottom) {
+                        onClick={(e) => {
+                            if (!bottomActive || isBottom || !e.nativeEvent.cancelable) {
                                 return;
                             }
 

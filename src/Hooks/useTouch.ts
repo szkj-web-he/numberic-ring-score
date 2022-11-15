@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef } from "react";
-import { drawBar, drawRadian, getAngle, getScrollValue, pointOnCircle } from "unit";
+import { drawBar, drawRadian, getAngle, getScrollValue, pointOnCircle } from "../unit";
 import { useMobile } from "./../Components/Scroll/Unit/useMobile";
 
 export const useTouch = (

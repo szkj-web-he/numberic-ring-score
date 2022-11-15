@@ -8,7 +8,7 @@
 /** This section will include all the necessary dependence for this tsx file */
 import { useTouch } from "Hooks/useTouch";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { drawBar, drawRadian, drawRing, getAngle, getScrollValue, pointOnCircle } from "unit";
+import { drawBar, drawRadian, drawRing, getAngle, getScrollValue, pointOnCircle } from "./unit";
 import { Col } from "./Components/Col";
 import { OptionProps } from "./type";
 
@@ -18,8 +18,6 @@ import { OptionProps } from "./type";
 /** This section will include all the interface for this tsx file */
 interface TempProps {
     data: OptionProps;
-
-    active?: boolean;
 
     onClick: () => void;
 
@@ -35,15 +33,7 @@ interface TempProps {
 }
 /* <------------------------------------ **** INTERFACE END **** ------------------------------------ */
 /* <------------------------------------ **** FUNCTION COMPONENT START **** ------------------------------------ */
-const Temp: React.FC<TempProps> = ({
-    data,
-    active,
-    score,
-    setScore,
-    span,
-    mobileStatus,
-    color,
-}) => {
+const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, color }) => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
 
@@ -307,7 +297,7 @@ const Temp: React.FC<TempProps> = ({
     const scoreValue = moveStatus ? moveScore : score;
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
     return (
-        <Col className={`item${active ? " active" : ""}`} span={span}>
+        <Col className={`item`} span={span}>
             <div className={`item_content`}>
                 <canvas ref={ref} className={"item_canvas"} onMouseDown={handleMouseDown} />
                 <span
