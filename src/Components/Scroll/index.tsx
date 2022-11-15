@@ -341,8 +341,9 @@ export const ScrollComponent = forwardRef<HTMLDivElement, ScrollProps>(
                 <></>
             ) : (
                 <DragBar
-                    className={`scroll_scrollBar__vertical
-                      ${hover || focus || mobileStatus ? ` scroll_scrollBar__active` : ""}`}
+                    className={`scroll_scrollBar__vertical ${
+                        hover || focus || mobileStatus ? ` scroll_scrollBar__active` : ""
+                    }`}
                     handleDragStart={showBar}
                     handleDragMove={handleDragMoveOfVertical}
                     handleDragEnd={hiddenBar}

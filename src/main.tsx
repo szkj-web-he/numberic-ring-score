@@ -6,9 +6,11 @@
  */
 /* <------------------------------------ **** DEPENDENCE IMPORT START **** ------------------------------------ */
 /** This section will include all the necessary dependence for this tsx file */
-import { ScrollComponent } from "Components/Scroll";
-import { useMapOptions } from "Hooks/useOptions";
-import { comms } from "index";
+import { Group } from "./Components/Group";
+import JumpWrap from "./Components/JumpWrap";
+import { ScrollComponent } from "./Components/Scroll";
+import { useMapOptions } from "./Hooks/useOptions";
+import { comms } from ".";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Row } from "./Components/Row";
 import Item from "./item";
@@ -111,48 +113,56 @@ const Temp: React.FC = () => {
 
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
     return (
-        <ScrollComponent className="mainScroll">
-            <div className={`main${isMobile ? " mobile" : ""}`}>
-                {options.map((items, index) => {
-                    return (
-                        <Fragment key={index}>
-                            <Row className={isMobile ? "optionsRow" : ""}>
-                                {items.map((item, n) => {
-                                    return (
-                                        <Item
-                                            data={{ ...item }}
-                                            key={item.code}
-                                            active={activeCode?.some(
-                                                (data) => data.code === item.code,
-                                            )}
-                                            color={
-                                                colorList[index * items.length + n] as [
-                                                    number,
-                                                    number,
-                                                    number,
-                                                ]
-                                            }
-                                            score={state[item.code] ?? 0}
-                                            setScore={(res) => {
-                                                setState((pre) => {
-                                                    const data = { ...pre };
-                                                    data[item.code] = res;
-                                                    return { ...data };
-                                                });
-                                            }}
-                                            onClick={() => handleClick(item)}
-                                            span={item.span as 1}
-                                            mobileStatus={isMobile}
-                                        />
-                                    );
-                                })}
-                            </Row>
-                            {index < options.length - 1 && !isMobile && <div className="hr" />}
-                        </Fragment>
-                    );
-                })}
-            </div>
-        </ScrollComponent>
+        <JumpWrap className="mainScroll">
+            <ScrollComponent
+                hidden={{ y: true }}
+                className="horizontalScroll"
+                bodyClassName="horizontalScrollBody"
+            >
+                <div className={`main${isMobile ? " mobile" : ""}`}>
+                    {options.map((items, index) => {
+                        return (
+                            <Fragment key={index}>
+                                <Group index={index} className={isMobile ? "optionsRow" : ""}>
+                                    <Row>
+                                        {items.map((item, n) => {
+                                            return (
+                                                <Item
+                                                    data={{ ...item }}
+                                                    key={item.code}
+                                                    active={activeCode?.some(
+                                                        (data) => data.code === item.code,
+                                                    )}
+                                                    color={
+                                                        colorList[index * items.length + n] as [
+                                                            number,
+                                                            number,
+                                                            number,
+                                                        ]
+                                                    }
+                                                    score={state[item.code] ?? 0}
+                                                    setScore={(res) => {
+                                                        setState((pre) => {
+                                                            const data = { ...pre };
+                                                            data[item.code] = res;
+                                                            return { ...data };
+                                                        });
+                                                    }}
+                                                    onClick={() => handleClick(item)}
+                                                    span={item.span as 1}
+                                                    mobileStatus={isMobile}
+                                                />
+                                            );
+                                        })}
+                                    </Row>
+                                </Group>
+                                {index < options.length - 1 && !isMobile && <div className="hr" />}
+                            </Fragment>
+                        );
+                    })}
+                </div>
+            </ScrollComponent>
+        </JumpWrap>
     );
 };
 /* <------------------------------------ **** FUNCTION COMPONENT END **** ------------------------------------ */

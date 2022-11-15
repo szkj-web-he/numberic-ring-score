@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef } from "react";
-import { drawBar, drawRadian, getAngle, getScrollValue, marginValue } from "unit";
+import { drawBar, drawRadian, getAngle, getScrollValue, pointOnCircle } from "unit";
 import { useMobile } from "./../Components/Scroll/Unit/useMobile";
 
 export const useTouch = (
@@ -139,36 +139,10 @@ export const useTouch = (
             }
 
             const position = e.changedTouches[0];
-            const scrollData = getScrollValue();
-            const x = position.pageX;
-            const y = position.pageY;
-
             const el = e.currentTarget as HTMLCanvasElement;
-            if (!el) {
-                return;
-            }
-            const rect = el.getBoundingClientRect();
-            const offsetX = x - (rect.left + scrollData.x);
-            const offsetY = y - (rect.top + scrollData.y);
-            const ctx = el.getContext("2d");
-            if (!ctx) {
-                return;
-            }
+            const status = pointOnCircle(el, position.pageX, position.pageY, borderWidth);
 
-            const { width, height } = ctx.canvas;
-
-            const r = width / 2 - marginValue();
-
-            const [rx, ry] = [width / 2, height / 2];
-
-            const d = Math.sqrt((ry - offsetY) ** 2 + (rx - offsetX) ** 2);
-
-            /**
-             * 判断触摸的点位是否在圆环上
-             * 扩大5的容差值
-             */
-
-            if (d > r + 3 || d < r - borderWidth - 3) {
+            if (!status) {
                 return;
             }
             e.preventDefault();

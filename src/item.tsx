@@ -8,7 +8,7 @@
 /** This section will include all the necessary dependence for this tsx file */
 import { useTouch } from "Hooks/useTouch";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { drawBar, drawRadian, drawRing, getAngle, getScrollValue } from "unit";
+import { drawBar, drawRadian, drawRing, getAngle, getScrollValue, pointOnCircle } from "unit";
 import { Col } from "./Components/Col";
 import { OptionProps } from "./type";
 
@@ -287,6 +287,12 @@ const Temp: React.FC<TempProps> = ({
             return;
         }
 
+        const status = pointOnCircle(e.currentTarget, e.pageX, e.pageY, borderWidth);
+
+        if (!status) {
+            return;
+        }
+
         setMoveStatus(true);
         timer.current && window.clearTimeout(timer.current);
         draw(e.currentTarget, e.pageX, e.pageY);
@@ -298,13 +304,18 @@ const Temp: React.FC<TempProps> = ({
         document.addEventListener("mouseup", handleMouseUp, true);
         window.addEventListener("blur", handleMouseCancel);
     };
-
+    const scoreValue = moveStatus ? moveScore : score;
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
     return (
         <Col className={`item${active ? " active" : ""}`} span={span}>
             <div className={`item_content`}>
                 <canvas ref={ref} className={"item_canvas"} onMouseDown={handleMouseDown} />
-                <span className={`item_value`}>{moveStatus ? moveScore : score}</span>
+                <span
+                    className={`item_value`}
+                    style={scoreValue ? { color: `rgb(${color.join(",")})` } : {}}
+                >
+                    {scoreValue}
+                </span>
             </div>
 
             <div className="item_name" dangerouslySetInnerHTML={{ __html: data.content }} />

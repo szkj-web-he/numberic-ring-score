@@ -223,3 +223,42 @@ export const drawBar = (el: HTMLCanvasElement, border: number, value: number): v
 
     ctx.restore();
 };
+
+/**
+ * 判断点位是否在圆上
+ * @param el canvas对象
+ * @param x 当前点击点位的x轴坐标
+ * @param y 当前点击点位的y轴坐标
+ * @param border 圆的边框大小
+ * @param value 误差值
+ * @returns
+ */
+export const pointOnCircle = (
+    el: HTMLCanvasElement | null,
+    x: number,
+    y: number,
+    border: number,
+    value = 3,
+): boolean => {
+    const scrollData = getScrollValue();
+
+    if (!el) {
+        return false;
+    }
+    const rect = el.getBoundingClientRect();
+    const offsetX = x - (rect.left + scrollData.x);
+    const offsetY = y - (rect.top + scrollData.y);
+    const ctx = el.getContext("2d");
+    if (!ctx) {
+        return false;
+    }
+
+    const { width, height } = ctx.canvas;
+
+    const r = width / 2 - marginValue();
+
+    const [rx, ry] = [width / 2, height / 2];
+
+    const d = Math.sqrt((ry - offsetY) ** 2 + (rx - offsetX) ** 2);
+    return d <= r + value && d >= r - border - value;
+};
