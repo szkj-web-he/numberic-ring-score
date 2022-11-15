@@ -6,15 +6,14 @@
  */
 /* <------------------------------------ **** DEPENDENCE IMPORT START **** ------------------------------------ */
 /** This section will include all the necessary dependence for this tsx file */
+import React, { Fragment, useEffect, useMemo, useState } from "react";
+import { comms } from ".";
 import { Group } from "./Components/Group";
 import JumpWrap from "./Components/JumpWrap";
+import { Row } from "./Components/Row";
 import { ScrollComponent } from "./Components/Scroll";
 import { useMapOptions } from "./Hooks/useOptions";
-import { comms } from ".";
-import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { Row } from "./Components/Row";
 import Item from "./item";
-import { OptionProps } from "./type";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
 /* <------------------------------------ **** INTERFACE START **** ------------------------------------ */
 /** This section will include all the interface for this tsx file */
@@ -23,8 +22,6 @@ import { OptionProps } from "./type";
 const Temp: React.FC = () => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
-    const [activeCode, setActiveCode] = useState<OptionProps[]>();
-
     const [options, isMobile] = useMapOptions();
 
     const colorList = useMemo(() => {
@@ -89,28 +86,6 @@ const Temp: React.FC = () => {
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
 
-    const handleClick = (item: OptionProps) => {
-        setActiveCode((pre) => {
-            const arr = pre ? [...pre] : [];
-            let n = -1;
-            for (let i = 0; i < arr.length; ) {
-                if (arr[i].code === item.code) {
-                    n = i;
-                    i = arr.length;
-                } else {
-                    ++i;
-                }
-            }
-
-            if (n >= 0) {
-                arr.splice(n, 1);
-            } else {
-                arr.push({ ...item });
-            }
-            return [...arr];
-        });
-    };
-
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
     return (
         <JumpWrap className="mainScroll">
@@ -130,9 +105,6 @@ const Temp: React.FC = () => {
                                                 <Item
                                                     data={{ ...item }}
                                                     key={item.code}
-                                                    active={activeCode?.some(
-                                                        (data) => data.code === item.code,
-                                                    )}
                                                     color={
                                                         colorList[index * items.length + n] as [
                                                             number,
@@ -148,7 +120,6 @@ const Temp: React.FC = () => {
                                                             return { ...data };
                                                         });
                                                     }}
-                                                    onClick={() => handleClick(item)}
                                                     span={item.span as 1}
                                                     mobileStatus={isMobile}
                                                 />

@@ -19,10 +19,6 @@ import { OptionProps } from "./type";
 interface TempProps {
     data: OptionProps;
 
-    active?: boolean;
-
-    onClick: () => void;
-
     span: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
     mobileStatus: boolean;
@@ -35,15 +31,7 @@ interface TempProps {
 }
 /* <------------------------------------ **** INTERFACE END **** ------------------------------------ */
 /* <------------------------------------ **** FUNCTION COMPONENT START **** ------------------------------------ */
-const Temp: React.FC<TempProps> = ({
-    data,
-    active,
-    score,
-    setScore,
-    span,
-    mobileStatus,
-    color,
-}) => {
+const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, color }) => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
 
@@ -307,7 +295,7 @@ const Temp: React.FC<TempProps> = ({
     const scoreValue = moveStatus ? moveScore : score;
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
     return (
-        <Col className={`item${active ? " active" : ""}`} span={span}>
+        <Col className={`item`} span={span}>
             <div className={`item_content`}>
                 <canvas ref={ref} className={"item_canvas"} onMouseDown={handleMouseDown} />
                 <span
