@@ -14,7 +14,7 @@ export const comms = new PluginComms({
         question?: string;
         instruction?: string;
         optionsInstruction?: string;
-        options?: Array<OptionProps>;
+        options?: Array<Array<OptionProps>>;
     };
     state: unknown;
     renderOnReady: (res: React.ReactNode) => void;
@@ -23,6 +23,7 @@ export const comms = new PluginComms({
 const Main: React.FC = () => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
+
     /* <------------------------------------ **** STATE END **** ------------------------------------ */
     /* <------------------------------------ **** PARAMETER START **** ------------------------------------ */
     /************* This section will include this component parameter *************/

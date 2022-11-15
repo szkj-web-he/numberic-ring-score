@@ -6,13 +6,14 @@
  */
 /* <------------------------------------ **** DEPENDENCE IMPORT START **** ------------------------------------ */
 /** This section will include all the necessary dependence for this tsx file */
+import { ColProps } from "Components/Col";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
+import { comms } from ".";
 import { Group } from "./Components/Group";
 import JumpWrap from "./Components/JumpWrap";
+import { Row } from "./Components/Row";
 import { ScrollComponent } from "./Components/Scroll";
 import { useMapOptions } from "./Hooks/useOptions";
-import { comms } from ".";
-import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { Row } from "./Components/Row";
 import Item from "./item";
 import { OptionProps } from "./type";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
@@ -24,10 +25,8 @@ const Temp: React.FC = () => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
 
-    const [options, isMobile] = useMapOptions();
-
     const colorList = useMemo(() => {
-        const list = comms.config.options ?? [];
+        const list = comms.config.options?.[1] ?? [];
         let r = Math.round(Math.random() * 245 + 10);
         let g = Math.round(Math.random() * 150 + 100);
         let b = Math.round(Math.random() * 150);
@@ -67,12 +66,22 @@ const Temp: React.FC = () => {
         });
     }, []);
 
+    const [options, isMobile] = useMapOptions();
+
     const [state, setState] = useState(() => {
-        const arr = comms.config.options ?? [];
-        const data: Record<string, null | number> = {};
-        for (let i = 0; i < arr.length; i++) {
-            data[arr[i].code] = null;
+        const rows = comms.config.options?.[0] ?? [];
+        const cols = comms.config.options?.[1] ?? [];
+        const data: Record<string, Record<string, null | number>> = {};
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const colsData: Record<string, null | number> = {};
+            for (let j = 0; j < cols.length; j++) {
+                const col = cols[j];
+                colsData[col.code] = null;
+            }
+            data[row.code] = { ...colsData };
         }
+
         return data;
     });
 
@@ -88,54 +97,71 @@ const Temp: React.FC = () => {
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
 
+    const colList = (
+        colGroup: (OptionProps & {
+            span?: number | undefined;
+        })[],
+        index: number,
+        rowCode: string,
+    ): Array<React.ReactElement<ColProps>> => {
+        return colGroup.map((item, n) => {
+            return (
+                <Item
+                    data={{ ...item }}
+                    key={item.code}
+                    color={colorList[index * colGroup.length + n] as [number, number, number]}
+                    score={state[rowCode][item.code] ?? 0}
+                    setScore={(res) => {
+                        setState((pre) => {
+                            const data = { ...pre };
+                            data[rowCode][item.code] = res;
+                            return { ...data };
+                        });
+                    }}
+                    span={item.span as 1}
+                    mobileStatus={isMobile}
+                />
+            );
+        });
+    };
+
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
+    const rows = comms.config.options?.[0] ?? [];
     return (
         <JumpWrap className="mainScroll">
-            <ScrollComponent
-                hidden={{ y: true }}
-                className="horizontalScroll"
-                bodyClassName="horizontalScrollBody"
-            >
-                <div className={`main${isMobile ? " mobile" : ""}`}>
-                    {options.map((items, index) => {
-                        return (
-                            <Fragment key={index}>
-                                <Group index={index} className={isMobile ? "optionsRow" : ""}>
-                                    <Row>
-                                        {items.map((item, n) => {
-                                            return (
-                                                <Item
-                                                    data={{ ...item }}
-                                                    key={item.code}
-                                                    color={
-                                                        colorList[index * items.length + n] as [
-                                                            number,
-                                                            number,
-                                                            number,
-                                                        ]
-                                                    }
-                                                    score={state[item.code] ?? 0}
-                                                    setScore={(res) => {
-                                                        setState((pre) => {
-                                                            const data = { ...pre };
-                                                            data[item.code] = res;
-                                                            return { ...data };
-                                                        });
-                                                    }}
-                                                    // onClick={() => handleClick(item)}
-                                                    span={item.span as 1}
-                                                    mobileStatus={isMobile}
-                                                />
-                                            );
-                                        })}
-                                    </Row>
-                                </Group>
-                                {index < options.length - 1 && !isMobile && <div className="hr" />}
-                            </Fragment>
-                        );
-                    })}
-                </div>
-            </ScrollComponent>
+            <div className={`main`}>
+                {rows.map((row, rowIndex) => {
+                    return (
+                        <Fragment key={row.code}>
+                            <div
+                                className="col_title"
+                                dangerouslySetInnerHTML={{
+                                    __html: row.content,
+                                }}
+                            />
+                            {options.map((colGroup, colGroupIndex) => {
+                                return (
+                                    <Fragment key={rowIndex * options.length + colGroupIndex}>
+                                        {/* <ScrollComponent
+                                            hidden={{ y: true }}
+                                            className="horizontalScroll"
+                                            bodyClassName="horizontalScrollBody"
+                                        > */}
+                                        <Group index={rowIndex * options.length + colGroupIndex}>
+                                            <Row>{colList(colGroup, colGroupIndex, row.code)}</Row>
+                                        </Group>
+                                        {/* </ScrollComponent> */}
+                                        {colGroupIndex < options.length - 1 && !isMobile && (
+                                            <div className="hr" />
+                                        )}
+                                    </Fragment>
+                                );
+                            })}
+                            {rowIndex < rows.length - 1 && <div className="group_hr" />}
+                        </Fragment>
+                    );
+                })}
+            </div>
         </JumpWrap>
     );
 };

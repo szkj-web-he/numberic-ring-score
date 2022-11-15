@@ -24,6 +24,7 @@ export const getElements = (id: string): HTMLElement[] => {
             }
         }
     }
+    console.log(arr);
     return arr;
 };
 

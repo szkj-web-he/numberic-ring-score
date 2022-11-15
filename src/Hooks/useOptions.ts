@@ -42,7 +42,11 @@ export const useMapOptions = (): [Array<Array<OptionProps & { span?: number }>>,
     }, []);
 
     const list = useMemo(() => {
-        const arr = comms.config.options ?? [];
+        const arr = comms.config.options?.[1] ?? [];
+
+        if (isMobile()) {
+            return [[...arr]];
+        }
 
         const list: Array<Array<OptionProps & { span: number }>> = [];
         let index = -1;

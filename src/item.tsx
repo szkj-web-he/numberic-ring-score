@@ -19,8 +19,6 @@ import { OptionProps } from "./type";
 interface TempProps {
     data: OptionProps;
 
-    onClick: () => void;
-
     span: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
     mobileStatus: boolean;
@@ -96,6 +94,7 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
                 c2d.current.clearRect(0, 0, c2d.current.canvas.width, c2d.current.canvas.height);
             }
             const c = ref.current;
+            console.log(c);
             if (!c) {
                 return;
             }
