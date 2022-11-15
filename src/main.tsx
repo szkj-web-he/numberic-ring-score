@@ -142,15 +142,19 @@ const Temp: React.FC = () => {
                             {options.map((colGroup, colGroupIndex) => {
                                 return (
                                     <Fragment key={rowIndex * options.length + colGroupIndex}>
-                                        {/* <ScrollComponent
+                                        <ScrollComponent
                                             hidden={{ y: true }}
                                             className="horizontalScroll"
                                             bodyClassName="horizontalScrollBody"
-                                        > */}
-                                        <Group index={rowIndex * options.length + colGroupIndex}>
-                                            <Row>{colList(colGroup, colGroupIndex, row.code)}</Row>
-                                        </Group>
-                                        {/* </ScrollComponent> */}
+                                        >
+                                            <Group
+                                                index={rowIndex * options.length + colGroupIndex}
+                                            >
+                                                <Row>
+                                                    {colList(colGroup, colGroupIndex, row.code)}
+                                                </Row>
+                                            </Group>
+                                        </ScrollComponent>
                                         {colGroupIndex < options.length - 1 && !isMobile && (
                                             <div className="hr" />
                                         )}

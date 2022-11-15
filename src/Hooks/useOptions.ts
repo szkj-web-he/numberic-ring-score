@@ -43,15 +43,21 @@ export const useMapOptions = (): [Array<Array<OptionProps & { span?: number }>>,
 
     const list = useMemo(() => {
         const arr = comms.config.options?.[1] ?? [];
-
+        const span = cols === 4 ? 3 : 2;
         if (isMobile()) {
-            return [[...arr]];
+            return [
+                arr.map((item) => {
+                    return {
+                        ...item,
+                        span,
+                    };
+                }),
+            ];
         }
 
         const list: Array<Array<OptionProps & { span: number }>> = [];
         let index = -1;
 
-        const span = cols === 4 ? 3 : 2;
         for (let i = 0; i < arr.length; i++) {
             const item = deepCloneData(arr[i]);
             if (i % cols) {

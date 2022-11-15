@@ -94,7 +94,6 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
                 c2d.current.clearRect(0, 0, c2d.current.canvas.width, c2d.current.canvas.height);
             }
             const c = ref.current;
-            console.log(c);
             if (!c) {
                 return;
             }
