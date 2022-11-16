@@ -185,7 +185,6 @@ export const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
          * 当visible变化时
          */
         useEffect(() => {
-            console.log(visible);
             visibleChangeFn.current?.(visible);
         }, [visible]);
 
