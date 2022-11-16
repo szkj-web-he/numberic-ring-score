@@ -6,11 +6,15 @@
  */
 /* <------------------------------------ **** DEPENDENCE IMPORT START **** ------------------------------------ */
 /** This section will include all the necessary dependence for this tsx file */
-import { useTouch } from "Hooks/useTouch";
+import { useTouch } from "./Hooks/useTouch";
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { drawBar, drawRadian, drawRing, getAngle, getScrollValue, pointOnCircle } from "unit";
+import { drawBar, drawRadian, drawRing, getAngle, getScrollValue, pointOnCircle } from "./unit";
 import { Col } from "./Components/Col";
 import { OptionProps } from "./type";
+import { getColor } from "./unit";
+import { Dropdown } from "./Components/Dropdown";
+import { DropdownBtn } from "./Components/DropdownBtn";
+import { DropdownContent } from "./Components/DropdownContent";
 
 /* 
 <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
@@ -23,15 +27,13 @@ interface TempProps {
 
     mobileStatus: boolean;
 
-    color: [number, number, number];
-
     score: number;
 
     setScore: (res: number) => void;
 }
 /* <------------------------------------ **** INTERFACE END **** ------------------------------------ */
 /* <------------------------------------ **** FUNCTION COMPONENT START **** ------------------------------------ */
-const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, color }) => {
+const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus }) => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
 
@@ -59,7 +61,7 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
 
     const destroy = useRef(false);
 
-    const ref = useTouch(borderWidth, color, setMoveScore, setMoveStatus, timer, setScore, () => {
+    const ref = useTouch(borderWidth, setMoveScore, setMoveStatus, timer, setScore, () => {
         timer.current && window.clearTimeout(timer.current);
 
         const c = ref.current;
@@ -73,7 +75,7 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
         }
 
         if (score > 0) {
-            drawRadian(c, borderWidth, score / 100, `rgb(${color.join(",")})`);
+            drawRadian(c, borderWidth, score / 100, `rgb(${getColor(score / 100).join(",")})`);
         } else {
             drawRing(ctx, borderWidth);
         }
@@ -110,7 +112,12 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
                 return;
             }
             if (scoreRef.current > 0) {
-                drawRadian(c, borderWidth, scoreRef.current / 100, `rgb(${color.join(",")})`);
+                drawRadian(
+                    c,
+                    borderWidth,
+                    scoreRef.current / 100,
+                    `rgb(${getColor(scoreRef.current / 100).join(",")})`,
+                );
             } else {
                 drawRing(ctx, borderWidth);
             }
@@ -122,7 +129,7 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
             window.removeEventListener("resize", draw);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [borderWidth, color]);
+    }, [borderWidth]);
 
     useEffect(() => {
         destroy.current = false;
@@ -151,7 +158,7 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
         const r = size / 2 - 5;
         const value = getAngle(size / 2, size / 2, r, left, top);
 
-        drawRadian(el, borderWidth, value, `rgba(${color.join(",")},0.3)`);
+        drawRadian(el, borderWidth, value, `rgba(${getColor(value).join(",")},0.3)`);
         setMoveScore(Math.round(value * 100));
     };
 
@@ -185,7 +192,7 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
         }
 
         if (score > 0) {
-            drawRadian(c, borderWidth, score / 100, `rgb(${color.join(",")})`);
+            drawRadian(c, borderWidth, score / 100, `rgb(${getColor(score / 100).join(",")})`);
         } else {
             drawRing(ctx, borderWidth);
         }
@@ -204,7 +211,7 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
         const r = size / 2 - 5;
         const value = getAngle(size / 2, size / 2, r, left, top);
 
-        drawRadian(el, borderWidth, value, `rgb(${color.join(",")})`);
+        drawRadian(el, borderWidth, value, `rgb(${getColor(value).join(",")})`);
         drawBar(el, borderWidth, value);
         setScore(Math.round(value * 100));
     };
@@ -300,13 +307,24 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus, 
                 <canvas ref={ref} className={"item_canvas"} onMouseDown={handleMouseDown} />
                 <span
                     className={`item_value`}
-                    style={scoreValue ? { color: `rgb(${color.join(",")})` } : {}}
+                    style={
+                        scoreValue ? { color: `rgb(${getColor(scoreValue / 100).join(",")})` } : {}
+                    }
                 >
                     {scoreValue}
                 </span>
             </div>
-
-            <div className="item_name" dangerouslySetInnerHTML={{ __html: data.content }} />
+            <Dropdown trigger={"hover"}>
+                <DropdownBtn className="item_name">
+                    <span dangerouslySetInnerHTML={{ __html: data.content }} />
+                </DropdownBtn>
+                <DropdownContent bodyClassName="dropdown_bodyContainer">
+                    <div
+                        dangerouslySetInnerHTML={{ __html: data.content }}
+                        className="dropdown_content"
+                    />
+                </DropdownContent>
+            </Dropdown>
         </Col>
     );
 };
