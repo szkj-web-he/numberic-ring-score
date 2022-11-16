@@ -1,10 +1,10 @@
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { drawBar, drawRadian, getAngle, getScrollValue, pointOnCircle } from "../unit";
 import { useMobile } from "./../Components/Scroll/Unit/useMobile";
+import { getColor } from "./../unit";
 
 export const useTouch = (
     borderWidth: number,
-    color: [number, number, number],
     setMoveScore: React.Dispatch<React.SetStateAction<number>>,
     setMoveStatus: (status: boolean) => void,
     timer: React.MutableRefObject<number | undefined>,
@@ -76,7 +76,7 @@ export const useTouch = (
             const r = size / 2 - 5;
             const value = getAngle(size / 2, size / 2, r, left, top);
 
-            drawRadian(node, borderWidth, value, `rgba(${color.join(",")},0.3)`);
+            drawRadian(node, borderWidth, value, `rgba(${getColor(value).join(",")},0.3)`);
 
             setMoveScoreRef.current(Math.round(value * 100));
         };
@@ -118,7 +118,7 @@ export const useTouch = (
             const r = size / 2 - 5;
             const value = getAngle(size / 2, size / 2, r, left, top);
 
-            drawRadian(node, borderWidth, value, `rgb(${color.join(",")})`);
+            drawRadian(node, borderWidth, value, `rgb(${getColor(value).join(",")})`);
             drawBar(node, borderWidth, value);
             setScoreRef.current(Math.round(value * 100));
         };
@@ -168,7 +168,7 @@ export const useTouch = (
             node?.removeEventListener("touchstart", handleTouchStart, options);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [borderWidth, color, mobileStatus]);
+    }, [borderWidth, mobileStatus]);
 
     return ref;
 };

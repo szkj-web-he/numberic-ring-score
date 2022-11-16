@@ -13,13 +13,15 @@ export const deepCloneData = <T>(data: T): T => {
  * 画圆环
  * @param ctx
  */
-export const drawRing = (ctx: CanvasRenderingContext2D, border: number): void => {
+export const drawRing = (ctx: CanvasRenderingContext2D, border: number, value = 0): void => {
+    const color = getColor(value);
+
     ctx.save();
     const { width, height } = ctx.canvas;
     const margin = 5;
     ctx.beginPath();
     ctx.lineWidth = border;
-    ctx.strokeStyle = "#EBEBEB";
+    ctx.strokeStyle = `rgba(${color.join(",")},0.15)`;
     ctx.arc(width / 2, height / 2, width / 2 - margin - border / 2, 0, Math.PI * 2);
     ctx.closePath();
     ctx.stroke();
@@ -27,19 +29,19 @@ export const drawRing = (ctx: CanvasRenderingContext2D, border: number): void =>
 };
 
 /**
- * 画柄
- * @param ctx 2d画布类
- * @param x 当前位置中点x轴
- * @param y 当前位置中点y轴
+ * 获取颜色
+ * @param value 0~1的值
  */
-// export const drawBar = (ctx: CanvasRenderingContext2D, x: number, y: number, border: number) => {
-//     ctx.beginPath();
-//     ctx.lineWidth = 0;
-//     ctx.fillStyle = "#fff";
-//     ctx.ellipse(100, 100, 50, 75, Math.PI / 4, 0, 2 * Math.PI);
-//     ctx.closePath();
-//     ctx.stroke();
-// };
+export const getColor = (value: number): [number, number, number] => {
+    const val = Math.round(value * 100);
+    let color: [number, number, number] = [255, 133, 134];
+    if (val > 66) {
+        color = [129, 198, 95];
+    } else if (val > 33) {
+        color = [255, 211, 71];
+    }
+    return color;
+};
 
 export const getScrollValue = (): {
     x: number;
@@ -151,7 +153,7 @@ export const drawRadian = (
     const { width, height } = ctx.canvas;
     ctx.clearRect(0, 0, width, height);
 
-    drawRing(ctx, border);
+    drawRing(ctx, border, value);
 
     if (!value) {
         return;
