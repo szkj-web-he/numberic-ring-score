@@ -6,7 +6,7 @@
  */
 /* <------------------------------------ **** DEPENDENCE IMPORT START **** ------------------------------------ */
 /** This section will include all the necessary dependence for this tsx file */
-import React, { Fragment, useEffect, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { comms } from ".";
 import { Group } from "./Components/Group";
 import JumpWrap from "./Components/JumpWrap";
@@ -23,47 +23,6 @@ const Temp: React.FC = () => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
     const [options, isMobile] = useMapOptions();
-
-    const colorList = useMemo(() => {
-        const list = comms.config.options ?? [];
-        let r = Math.round(Math.random() * 245 + 10);
-        let g = Math.round(Math.random() * 150 + 100);
-        let b = Math.round(Math.random() * 150);
-
-        let increment = 10;
-        return list.map(() => {
-            const rgb = [r, g, b];
-
-            const copyR = r;
-            r = g;
-            g = b;
-            b = copyR;
-            if (r + increment < 250 && r + increment > 10) {
-                r += increment;
-                return rgb;
-            }
-
-            if (g + increment < 200 && g + increment > 100) {
-                g += increment;
-                return rgb;
-            }
-
-            if (b + increment < 150 && b > 0) {
-                b += increment;
-                return rgb;
-            }
-
-            const copyB = b;
-            b = g;
-            g = copyB;
-            increment = -10;
-
-            rgb[1] = g;
-            rgb[2] = b;
-
-            return rgb;
-        });
-    }, []);
 
     const [state, setState] = useState(() => {
         const arr = comms.config.options ?? [];
@@ -100,18 +59,11 @@ const Temp: React.FC = () => {
                             <Fragment key={index}>
                                 <Group index={index} className={isMobile ? "optionsRow" : ""}>
                                     <Row>
-                                        {items.map((item, n) => {
+                                        {items.map((item) => {
                                             return (
                                                 <Item
                                                     data={{ ...item }}
                                                     key={item.code}
-                                                    color={
-                                                        colorList[index * items.length + n] as [
-                                                            number,
-                                                            number,
-                                                            number,
-                                                        ]
-                                                    }
                                                     score={state[item.code] ?? 0}
                                                     setScore={(res) => {
                                                         setState((pre) => {

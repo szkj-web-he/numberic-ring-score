@@ -27,6 +27,23 @@ export const getElements = (id: string): HTMLElement[] => {
     return arr;
 };
 
+/**
+ *
+ * @param ref
+ * @param id
+ * @returns
+ */
+
+export const findParent = (el: HTMLElement, parent: HTMLElement): number => {
+    let p = el.parentElement;
+    let top = el.offsetTop;
+    while (p !== parent) {
+        top += p?.offsetTop ?? 0;
+        p = p?.parentElement ?? null;
+    }
+    return top;
+};
+
 export const useActiveStatus = (
     ref: RefObject<HTMLDivElement | null>,
     id: string,
@@ -44,27 +61,32 @@ export const useActiveStatus = (
 
         const scrollBody = getScrollBody(ref.current);
 
+        if (!scrollBody) {
+            return;
+        }
+
         const arr = getElements(id);
 
         let n = -1;
         const scrollTop = scrollBody?.scrollTop ?? 0;
         for (let i = 0; i < arr.length; ) {
             const item = arr[i];
+            const top = findParent(item, scrollBody);
+
             if (i === arr.length - 1) {
-                if (item && item?.offsetTop + item.offsetHeight > scrollTop) {
+                if (top + item.offsetHeight > scrollTop) {
                     n = i;
                     i = arr.length;
                 } else {
                     ++i;
                 }
-            } else if (item && item?.offsetTop >= scrollTop) {
+            } else if (top >= scrollTop) {
                 n = i;
                 i = arr.length;
             } else {
                 ++i;
             }
         }
-
         setShow(!!(scrollBody && scrollBody.offsetHeight < scrollBody.scrollHeight));
         setIsBottom(
             !!(

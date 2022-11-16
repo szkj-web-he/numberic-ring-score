@@ -144,3 +144,19 @@ body {
 .horizontalScrollBody {
     height: auto !important;
 }
+
+.dropdown_bodyContainer {
+    background-color: rgba(#000, 0.7);
+    border-radius: 4px;
+}
+
+.dropdown_content {
+    font-family: $fontFamily;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    padding: 4px 12px;
+}

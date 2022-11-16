@@ -13,7 +13,7 @@ import { useHashId } from "./../../Hooks/useHashId";
 import "./style.scss";
 import { getScrollBody } from "./Unit/getScrollBody";
 import Triangle from "./Unit/triangle";
-import { getElements, useActiveStatus } from "./Unit/useActiveStatus";
+import { findParent, getElements, useActiveStatus } from "./Unit/useActiveStatus";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
 /* <------------------------------------ **** INTERFACE START **** ------------------------------------ */
 /** This section will include all the interface for this tsx file */
@@ -89,7 +89,6 @@ const JumpWrap: React.FC<ScrollProps> = ({ children, style, ...props }) => {
         if (n >= arr.length) {
             n = arr.length - 1;
         }
-
         let toEl: HTMLElement | null = null;
         for (let i = 0; i < arr.length; ) {
             const el = arr[i];
@@ -101,12 +100,11 @@ const JumpWrap: React.FC<ScrollProps> = ({ children, style, ...props }) => {
                 ++i;
             }
         }
-
         if (!toEl) {
             return;
         }
         scrollBody.scrollTo({
-            top: toEl.offsetTop,
+            top: findParent(toEl, scrollBody),
             behavior: "smooth",
         });
     };
@@ -132,8 +130,8 @@ const JumpWrap: React.FC<ScrollProps> = ({ children, style, ...props }) => {
                 <div className="floating_button">
                     <div
                         className="toTop_button"
-                        onClick={() => {
-                            if (!topActive) {
+                        onClick={(e) => {
+                            if (!topActive || !e.nativeEvent.cancelable) {
                                 return;
                             }
 
@@ -147,8 +145,8 @@ const JumpWrap: React.FC<ScrollProps> = ({ children, style, ...props }) => {
                     </div>
                     <div
                         className="toBottom_button"
-                        onClick={() => {
-                            if (!bottomActive || isBottom) {
+                        onClick={(e) => {
+                            if (!bottomActive || isBottom || !e.nativeEvent.cancelable) {
                                 return;
                             }
 
