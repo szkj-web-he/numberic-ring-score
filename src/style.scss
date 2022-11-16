@@ -86,12 +86,17 @@ body {
     line-height: 20px;
     letter-spacing: 0.2px;
     color: #4d4d4d;
-    width: 100%;
+    width: calc(100% - 20px);
+    margin: 0 auto;
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-top: 12px;
+
+    * {
+        display: inline;
+    }
 }
 
 .item_content {
