@@ -5,7 +5,7 @@
  * @lastModify xuejie.he 2022-01-14
  */
 
-import { getScrollValue } from "../../unit";
+import { getScrollValue } from "./getScrollValue";
 
 type Outset = [number, number];
 interface Boundary {
@@ -59,7 +59,7 @@ export interface AutoPositionProps {
  * 自动定位位置
  */
 
-export const main = (): ((res: AutoPositionProps) => AutoPositionResult) => {
+export const main = () => {
     let staticData: StaticProps | null = null;
 
     const getOffset = (val: number, d: "x" | "y", m: "menu" | "triangle"): number => {

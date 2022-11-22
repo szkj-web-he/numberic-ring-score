@@ -30,12 +30,7 @@ type UpdateContentAction = {
 
 type HoverAction = UpdateBtnAction | UpdateContentAction;
 
-export interface ObjectDOMRect {
-    readonly height: number;
-    readonly width: number;
-}
-
-export const useHover = (delayOnShow = 150, delayOnHide = 150): ((res: HoverAction) => void) => {
+export const useHover = (delayOnShow = 150, delayOnHide = 150): ((action: HoverAction) => void) => {
     /**
      * btn的状态
      * 是否被hover、focus

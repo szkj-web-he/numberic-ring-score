@@ -123,8 +123,12 @@ export const DropdownBtn = forwardRef<HTMLDivElement, DropdownBtnProps>(
                 disable: disableVal,
                 trigger: triggerValue,
             };
-
-            setBtnIsClickFn.current(deepCloneData(btnIsClickRef.current));
+            setBtnIsClickFn.current((pre) => {
+                if (JSON.stringify(pre) === JSON.stringify(btnIsClickRef.current)) {
+                    return pre;
+                }
+                return deepCloneData(btnIsClickRef.current);
+            });
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [clickId, contextmenuId, triggerValue, disableVal, eventName, id]);
 

@@ -5,7 +5,7 @@
  * @lastModify xuejie.he 2022-01-06
  */
 
-import "./style.scss";
+import "../../Portal/style.scss";
 
 export interface TransitionClassProps {
     enter: {

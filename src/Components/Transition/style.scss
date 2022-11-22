@@ -227,3 +227,11 @@ $name: "transition_";
     transform: scale3d(0, 1, 1);
     opacity: 0;
 }
+
+.transition_r__hidden {
+    visibility: hidden !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    opacity: 0 !important;
+    z-index: -9999 !important;
+}

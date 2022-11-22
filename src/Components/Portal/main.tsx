@@ -8,53 +8,44 @@
 /** This section will include all the necessary dependence for this tsx file */
 import React, { forwardRef, memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { deepCloneData, getScrollValue } from "../../unit";
-import { ActionType, useCssTransition } from "../Transition/Hooks/useCssTransition";
-import { setStyle } from "../Transition/Transition/Unit/addStyle";
-import { forceReflow } from "../Transition/Transition/Unit/forceReflow";
-import { Placement, TriangleProps } from "../Unit/type";
-import { AutoPositionResult, main, OffsetProps } from "./autoPosition";
-import { addEventList, EventParams, removeEventList } from "./eventListener";
-import { getTriangle } from "./getTriangle";
-import { listenDomChange } from "./listenDomChange";
-import { mountElement } from "./mount";
+import { addEventList, EventParams, removeEventList } from "./Unit/eventListener";
+import { mountElement } from "./Unit/mount";
+import { ActionType, useCssTransition } from "../Hooks/useCssTransition";
+import { setStyle } from "../Transition/Unit/addStyle";
+import { AutoPositionResult, main } from "../Kite/Unit/autoPosition";
+import { getScrollValue } from "../Kite/Unit/getScrollValue";
+import { getTriangle } from "../Kite/Unit/getTriangle";
+import { listenDomChange } from "../Kite/Unit/listenDomChange";
+import { toFixed } from "../Kite/Unit/toFixed";
+import { getTransitionClass, TransitionClassProps } from "../Kite/Unit/transitionClass";
+import Triangle from "../Kite/Unit/triangle";
+import { MainProps, SizeProps } from "../Kite/Unit/type";
 import "./style.scss";
-import { toFixed } from "./toFixed";
-import { getTransitionClass, TransitionClassProps } from "./transitionClass";
-import Triangle from "./triangle";
-import { Direction, SizeProps } from "./type";
+import { deepCloneData } from "../../unit";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
 /* <------------------------------------ **** INTERFACE START **** ------------------------------------ */
 /** This section will include all the interface for this tsx file */
-interface TempProps extends React.HTMLAttributes<HTMLDivElement> {
-    isRemove: boolean;
+interface TempProps
+    extends React.HTMLAttributes<HTMLDivElement>,
+        Omit<MainProps, "handlePositionChange"> {
     root?: Element;
-    direction: Direction;
-    placement: Placement;
-    portalOffset?: OffsetProps;
-    triangleOffset?: TriangleProps;
-    animation?: "fade";
-    handleTransitionStart?: () => void;
-    handleTransitionEnd?: () => void;
-    handleTransitionCancel?: () => void;
-    mount?: Element;
-    bodyClassName?: string;
     show?: boolean;
     hashId?: string;
     children?: React.ReactNode;
+    isTransition: boolean;
 }
 /* <------------------------------------ **** INTERFACE END **** ------------------------------------ */
 /* <------------------------------------ **** FUNCTION COMPONENT START **** ------------------------------------ */
 const Temp = forwardRef<HTMLDivElement, TempProps>(
     (
         {
-            isRemove,
             root,
-            direction,
-            placement,
-            portalOffset,
-            triangleOffset,
-            animation,
+            placement = "cb",
+            direction = "vertical",
+            offset,
+            triangle,
+            animate,
+
             handleTransitionStart,
             handleTransitionEnd,
             handleTransitionCancel,
@@ -63,8 +54,8 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
             mount,
             show,
             hashId,
-
             bodyClassName,
+            isTransition,
             children,
             ...props
         },
@@ -78,9 +69,9 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
         const [positional, setPositional] = useState<AutoPositionResult>();
         const autoPositionFn = useRef(main());
         const transitionEnd = useRef(true);
+
         const [initStyle, setInitStyle] = useState(style);
 
-        const count = useRef(0);
         /**
          * 用来diff比较
          */
@@ -98,69 +89,48 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
 
         const directionRef = useRef(direction);
         const placementRef = useRef(placement);
-        const portalOffsetRef = useRef(portalOffset);
-        const triangleOffsetRef = useRef(triangleOffset);
-        const animationRef = useRef(animation);
+        const portalOffsetRef = useRef(offset);
+        const triangleOffsetRef = useRef(triangle);
+        const animationRef = useRef(animate);
         const styleRef = useRef(style);
         const rootRef = useRef(root);
         const mountRef = useRef(mount);
 
         const portalRef = useRef<HTMLDivElement | null>(null);
 
-        const showRef = useRef<boolean>();
-
-        /**
-         * 每当 show改变时触发
-         * 每当 可见且 btn或者 content产生变化时触发
-         *
-         * 开始使用的是callback进行调用触发
-         * 但考虑到dom的获取在useEffect等等里才能稳定的读取
-         *
-         * 决定使用setState进行触发更新
-         *
-         */
-
-        const [visible, setVisible] = useState<boolean>();
+        const oldShow = useRef<boolean>();
 
         const [refresh, setRefresh] = useState(0);
 
-        const transitionStart = useRef(false);
-
         const [dispatch, currentClassName, currentStyle] = useCssTransition(
             initStyle,
-            undefined,
             () => {
+                // console.log("**************** start ******************");
                 handleTransitionStart?.();
-                transitionStart.current = true;
             },
             () => {
+                // console.log("**************** end ******************");
                 handleTransitionEnd?.();
-                transitionStart.current = false;
                 transitionEnd.current = true;
                 setRefresh((pre) => ++pre);
             },
 
             () => {
+                // console.log("****************** cancel ********************");
                 handleTransitionCancel?.();
             },
-            portalRef,
+            portalRef.current,
         );
 
         const dispatchRef = useRef(dispatch);
 
+        const needSwitchVisible = useRef(false);
+
+        const isTransitionRef = useRef(isTransition);
+
         /* <------------------------------------ **** STATE END **** ------------------------------------ */
         /* <------------------------------------ **** PARAMETER START **** ------------------------------------ */
         /************* This section will include this component parameter *************/
-
-        useEffect(() => {
-            showRef.current = show;
-            transitionEnd.current = false;
-            if (show) {
-                ++count.current;
-            }
-
-            setVisible(show);
-        }, [show]);
 
         /**
          * 将监听的数据转化为静态变量
@@ -179,25 +149,77 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
             placementRef.current = placement;
         }, [placement]);
         useLayoutEffect(() => {
-            portalOffsetRef.current = portalOffset;
-        }, [portalOffset]);
+            portalOffsetRef.current = offset;
+        }, [offset]);
         useLayoutEffect(() => {
-            triangleOffsetRef.current = triangleOffset;
-        }, [triangleOffset]);
+            triangleOffsetRef.current = triangle;
+        }, [triangle]);
         useLayoutEffect(() => {
-            animationRef.current = animation;
-        }, [animation]);
+            animationRef.current = animate;
+        }, [animate]);
         useLayoutEffect(() => {
             styleRef.current = style;
         }, [style]);
         useLayoutEffect(() => {
             mountRef.current = mount;
         }, [mount]);
+        useLayoutEffect(() => {
+            isTransitionRef.current = isTransition;
+        }, [isTransition]);
 
         /**
          * end
          * 将监听的数据转化为静态变量
          */
+
+        useLayoutEffect(() => {
+            return () => {
+                needSwitchVisible.current = false;
+                oldShow.current === undefined;
+            };
+        }, []);
+
+        useEffect(() => {
+            if (typeof show === "boolean") {
+                const setSize = (el: HTMLDivElement | null) => {
+                    if (!el) {
+                        return;
+                    }
+                    const rect = el.getBoundingClientRect();
+                    portalSize.current = {
+                        width: rect.width,
+                        height: rect.height,
+                    };
+
+                    const triangleNode = getTriangle(el, "kite_triangle");
+                    if (triangleNode) {
+                        const _rect = triangleNode.getBoundingClientRect();
+                        triangleSize.current = {
+                            width: _rect.width,
+                            height: _rect.height,
+                        };
+                    }
+                    needSwitchVisible.current = true;
+
+                    setRefresh((pre) => ++pre);
+                };
+
+                if (oldShow.current === undefined && show === false) {
+                    false;
+                } else {
+                    transitionEnd.current = false;
+                    dispatchRef.current({
+                        type: ActionType.InitSizeAction,
+                        payload: {
+                            value: show,
+                            callback: setSize,
+                        },
+                    });
+                }
+            }
+
+            oldShow.current = show;
+        }, [show]);
 
         useEffect(() => {
             const diffChild = () => {
@@ -231,12 +253,21 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
             };
 
             const mainFn = () => {
-                if (!showRef.current || !transitionEnd.current) {
+                if (!oldShow.current || !transitionEnd.current) {
                     return;
                 }
                 diffChild();
                 diffRoot();
                 setRefresh((pre) => ++pre);
+            };
+
+            let timer: null | number = null;
+            const resizeFn = () => {
+                timer && window.clearTimeout(timer);
+                timer = window.setTimeout(() => {
+                    timer = null;
+                    mainFn();
+                });
             };
 
             const event: EventParams[] = [
@@ -247,13 +278,14 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
                 },
                 {
                     type: "resize",
-                    listener: mainFn,
+                    listener: resizeFn,
                 },
             ];
 
             addEventList(window, event);
 
             return () => {
+                timer && window.clearTimeout(timer);
                 removeEventList(window, event);
             };
         }, []);
@@ -263,7 +295,7 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
          */
         useLayoutEffect(() => {
             const fn = () => {
-                if (!root || !showRef.current || !transitionEnd.current) {
+                if (!root || !oldShow.current || !transitionEnd.current) {
                     return;
                 }
 
@@ -313,7 +345,7 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
         useEffect(() => {
             const fn = () => {
                 const el = portalRef.current;
-                if (!el || !showRef.current || !transitionEnd.current) {
+                if (!el || !oldShow.current || !transitionEnd.current) {
                     return;
                 }
 
@@ -344,12 +376,12 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
         }, []);
 
         useEffect(() => {
-            if (showRef.current && transitionEnd.current) {
+            if (oldShow.current && transitionEnd.current) {
                 setRefresh((pre) => ++pre);
             }
-        }, [root, direction, placement, portalOffset, triangleOffset, mount]);
+        }, [root, direction, placement, offset, triangle, mount]);
 
-        useLayoutEffect(() => {
+        useEffect(() => {
             const portal = portalRef.current;
             const btn = rootRef.current;
             /**
@@ -440,7 +472,7 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
              * 计算位置
              */
 
-            if (refresh && typeof showRef.current === "boolean" && btn) {
+            if (refresh && typeof oldShow.current === "boolean" && btn) {
                 const btnRect = btn.getBoundingClientRect();
                 let data: AutoPositionResult | undefined = undefined;
                 if (btnRect && portalSize.current) {
@@ -465,174 +497,19 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
                     setLatLng(data);
                     setTransitionClass(data);
                 }
-                dispatchRef.current({
-                    type: ActionType.SwitchVisibleStatusAction,
-                    payload: {
-                        value: showRef.current,
-                        isTransition: !!count.current,
-                    },
-                });
+                if (needSwitchVisible.current) {
+                    // console.log("dispatch时候的show值", oldShow.current);
+                    dispatchRef.current({
+                        type: ActionType.AfterReadyAction,
+                        payload: {
+                            value: oldShow.current,
+                            isTransition: isTransitionRef.current,
+                        },
+                    });
+                    needSwitchVisible.current = false;
+                }
             }
         }, [refresh]);
-
-        /**
-         * 当show切换时触发的
-         */
-        useEffect(() => {
-            const portal = portalRef.current;
-            let displayStyle = portal?.style.display;
-            let timer: null | number = null;
-            let destroy = false;
-            let addLock = false;
-            let addDisplay = false;
-            let hiddenClassName: string | undefined = undefined;
-
-            /**
-             * 赋值 portal的size
-             */
-            const setSize = (el: HTMLElement) => {
-                const rect = el.getBoundingClientRect();
-                portalSize.current = {
-                    width: rect.width,
-                    height: rect.height,
-                };
-
-                const triangleNode = getTriangle(el, "kite_triangle");
-                if (triangleNode) {
-                    const _rect = triangleNode.getBoundingClientRect();
-                    triangleSize.current = {
-                        width: _rect.width,
-                        height: _rect.height,
-                    };
-                }
-            };
-
-            /**
-             * 当可见时
-             */
-            const hasShow = (el: HTMLDivElement, callback: () => void) => {
-                /**
-                 * 回归不可见状态
-                 */
-                displayStyle = el.style.display;
-                el.style.display = "none";
-                addDisplay = true;
-                forceReflow();
-
-                /**
-                 * 开始为获取宽高 添加它应有的属性
-                 */
-                timer = window.setTimeout(() => {
-                    if (destroy) {
-                        return;
-                    }
-
-                    if (!el.hasAttribute("transition-clock")) {
-                        addLock = true;
-                        el.setAttribute("transition-clock", "true");
-                    }
-
-                    el.style.display = displayStyle ?? "";
-                    addDisplay = false;
-                    forceReflow();
-
-                    /**
-                     * 开始获取
-                     */
-                    timer = window.setTimeout(() => {
-                        if (destroy) {
-                            return;
-                        }
-                        setSize(el);
-
-                        addLock && el.removeAttribute("transition-clock");
-                        addLock = false;
-                        forceReflow();
-                        /**
-                         * 获取完成
-                         */
-                        callback();
-                    });
-                });
-            };
-
-            /**
-             * 当 display等于none时
-             */
-            const hasHidden = (el: HTMLDivElement, callback: () => void) => {
-                for (let i = 0; i < el.classList.length; ) {
-                    const classNameValue = el.classList[i];
-                    if (classNameValue.includes("transition_hidden")) {
-                        hiddenClassName = classNameValue;
-                        i = el.classList.length;
-                    } else {
-                        ++i;
-                    }
-                    hiddenClassName && el.classList.remove(hiddenClassName);
-                }
-
-                if (!el.hasAttribute("transition-clock")) {
-                    addLock = true;
-                    el.setAttribute("transition-clock", "true");
-                }
-                forceReflow();
-                timer = window.setTimeout(() => {
-                    if (destroy) {
-                        return;
-                    }
-
-                    setSize(el);
-
-                    forceReflow();
-
-                    timer = window.setTimeout(() => {
-                        if (destroy) {
-                            return;
-                        }
-                        addLock && el.removeAttribute("transition-clock");
-                        hiddenClassName && el.classList.add(hiddenClassName);
-
-                        addLock = false;
-                        hiddenClassName = undefined;
-
-                        callback();
-                    });
-                });
-            };
-
-            const refreshPosition = () => {
-                setRefresh((pre) => ++pre);
-            };
-
-            if (typeof visible === "boolean" && portal) {
-                if (transitionStart.current) {
-                    refreshPosition();
-                } else {
-                    const isNone = window.getComputedStyle(portal, null).display === "none";
-                    if (visible) {
-                        if (isNone) {
-                            hasHidden(portal, refreshPosition);
-                        } else {
-                            hasShow(portal, refreshPosition);
-                        }
-                    } else {
-                        if (!isNone) {
-                            setSize(portal);
-                        }
-                        refreshPosition();
-                    }
-                }
-            }
-            return () => {
-                destroy = true;
-                timer && window.clearTimeout(timer);
-                addLock && portal?.removeAttribute("transition-clock");
-                hiddenClassName && portal?.classList.add(hiddenClassName);
-                if (addDisplay && portal) {
-                    portal.style.display = displayStyle ?? "";
-                }
-            };
-        }, [visible]);
 
         /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
         /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
@@ -649,10 +526,8 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
             }
             return arr.join(" ") + (className ? ` ${className}` : "");
         };
+
         /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
-        if (isRemove) {
-            return <></>;
-        }
         return createPortal(
             <div
                 key={hashId ? `${hashId}-main` : undefined}
@@ -666,13 +541,12 @@ const Temp = forwardRef<HTMLDivElement, TempProps>(
                         (ref as React.MutableRefObject<HTMLElement | null>).current = el;
                     }
                 }}
-                {...{ "transition-clock": "true" }}
-                style={currentStyle}
+                style={{ ...style, ...currentStyle }}
                 {...props}
             >
                 <Triangle
                     className={"kite_triangle"}
-                    attr={triangleOffset}
+                    attr={triangle}
                     position={positional}
                     d={direction}
                     placement={placement}

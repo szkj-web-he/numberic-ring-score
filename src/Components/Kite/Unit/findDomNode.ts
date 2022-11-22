@@ -5,7 +5,7 @@
  * @lastModify xuejie.he 2021-12-10
  */
 
-import { getElFiber } from "./getElFiber";
+import { getElFiber } from "../../../DataDisplay/FixedSizeText/Unit/getElFiber";
 
 export type WorkTag =
     | 0
@@ -78,7 +78,9 @@ export const findDomFn = (node: HTMLElement, id: string): boolean => {
     const key = keys.find((item) => item.includes(fiberKey));
 
     if (key) {
-        let fiber: Fiber | null = (node as unknown as Record<string, Fiber>)[key];
+        let fiber: Fiber | null = (node as unknown as Record<string, Fiber>)[
+            key
+        ];
         let status = false;
 
         while (fiber && !status) {
@@ -104,7 +106,7 @@ export const findDomFn = (node: HTMLElement, id: string): boolean => {
 const findParentFromFiber = (
     fiber: Fiber,
     includeEls: Array<{ el: Element; status: boolean }>,
-    els?: Element[],
+    els?: Element[]
 ) => {
     let status = false;
     if (fiber.tag === 5 && fiber.stateNode) {
@@ -155,7 +157,7 @@ const findParentFromFiber = (
 export const findReactElementFromDom = (
     el: Element,
     includeEls: Array<includeElsProps>,
-    els?: Element[],
+    els?: Element[]
 ): Array<includeElsProps & { status: boolean }> => {
     const fiber = getElFiber(el);
     const arr = includeEls.map((item) => {
@@ -196,7 +198,7 @@ export const findReactElementFromDom = (
  */
 export const findReactElementFromDoms = (
     params: Element[],
-    includeEls: Array<includeElsProps>,
+    includeEls: Array<includeElsProps>
 ): Array<includeElsProps & { status: boolean }> => {
     const els: Array<
         includeElsProps & {
@@ -204,7 +206,10 @@ export const findReactElementFromDoms = (
         }
     > = [];
     for (let i = 0; i < params.length; i++) {
-        if (params[i].nodeType === 1 && !["HTML", "BODY"].includes(params[i].nodeName)) {
+        if (
+            params[i].nodeType === 1 &&
+            !["HTML", "BODY"].includes(params[i].nodeName)
+        ) {
             const arr = findReactElementFromDom(params[i], includeEls, params);
             for (let i = 0; i < arr.length; i++) {
                 if (els[i]) {
