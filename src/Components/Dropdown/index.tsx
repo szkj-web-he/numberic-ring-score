@@ -6,11 +6,9 @@
  */
 /* <------------------------------------ **** DEPENDENCE IMPORT START **** ------------------------------------ */
 /** This section will include all the necessary dependence for this tsx file */
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, { createContext, memo, useContext, useRef, useState } from "react";
 import { OffsetProps, Placement, TriangleProps, TriggerProps } from "../Unit/type";
 import { useHashId } from "./../../Hooks/useHashId";
-import { memo } from "react";
-import { useEffect } from "react";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
 /* <------------------------------------ **** INTERFACE START **** ------------------------------------ */
 /** This section will include all the interface for this tsx file */
