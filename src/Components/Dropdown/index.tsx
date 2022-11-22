@@ -9,6 +9,8 @@
 import React, { createContext, useContext, useRef, useState } from "react";
 import { OffsetProps, Placement, TriangleProps, TriggerProps } from "../Unit/type";
 import { useHashId } from "./../../Hooks/useHashId";
+import { memo } from "react";
+import { useEffect } from "react";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
 /* <------------------------------------ **** INTERFACE START **** ------------------------------------ */
 /** This section will include all the interface for this tsx file */
@@ -175,7 +177,8 @@ const DropdownContext = createContext<DropdownContextProps>({
 export const useDropdownContext = (): DropdownContextProps => useContext(DropdownContext);
 
 /* <------------------------------------ **** FUNCTION COMPONENT START **** ------------------------------------ */
-export const Dropdown: React.FC<DropdownProps> = ({ children, trigger, ...props }) => {
+export const Dropdown: React.FC<DropdownProps> = memo(({ children, trigger, ...props }) => {
+    Dropdown.displayName = "Dropdown";
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
     const id = useHashId();
@@ -191,6 +194,23 @@ export const Dropdown: React.FC<DropdownProps> = ({ children, trigger, ...props 
     /* <------------------------------------ **** STATE END **** ------------------------------------ */
     /* <------------------------------------ **** PARAMETER START **** ------------------------------------ */
     /************* This section will include this component parameter *************/
+    useEffect(() => {
+        console.log("btnIsClick");
+    }, [btnIsClick]);
+    useEffect(() => {
+        console.log("props");
+    }, [props]);
+    useEffect(() => {
+        console.log("children");
+    }, [children]);
+    useEffect(() => {
+        console.log("trigger");
+    }, [trigger]);
+    useEffect(() => {
+        return () => {
+            console.log("被销毁");
+        };
+    }, []);
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
@@ -215,5 +235,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ children, trigger, ...props 
             </DropdownContext.Provider>
         </DropdownPropsContext.Provider>
     );
-};
+});
 /* <------------------------------------ **** FUNCTION COMPONENT END **** ------------------------------------ */
+
+Dropdown.displayName = "Dropdown";

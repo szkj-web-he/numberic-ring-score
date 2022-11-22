@@ -1,10 +1,3 @@
-/**
- * @file mount
- * @date 2022-01-10
- * @author xuejie.he
- * @lastModify xuejie.he 2022-01-10
- */
-
 export const mountElement = (el?: Element): Element => {
     if (el) {
         return el;

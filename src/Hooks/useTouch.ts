@@ -85,6 +85,10 @@ export const useTouch = (
          * touchmove
          */
         const handleTouchMove = (e: TouchEvent) => {
+            if (!e.cancelable) {
+                return true;
+            }
+
             e.preventDefault();
             e.stopImmediatePropagation();
             timer.current && window.clearTimeout(timer.current);

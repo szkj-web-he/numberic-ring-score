@@ -6,7 +6,7 @@
  */
 /* <------------------------------------ **** DEPENDENCE IMPORT START **** ------------------------------------ */
 /** This section will include all the necessary dependence for this tsx file */
-import { SplitCols } from "Hooks/useOptions";
+import { SplitCols } from "../../Hooks/useOptions";
 import React, { forwardRef, useEffect, useState } from "react";
 import { ColProps } from "../Col";
 import "./style.scss";

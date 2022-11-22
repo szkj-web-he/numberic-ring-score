@@ -6,6 +6,8 @@ import { ConfigYML, PluginComms } from "@possie-engine/dr-plugin-sdk";
 import Header from "./header";
 import MainContent from "./main";
 import { OptionProps } from "./type";
+// import eruda from "eruda";
+// eruda.init();
 
 export const comms = new PluginComms({
     defaultConfig: new ConfigYML(),

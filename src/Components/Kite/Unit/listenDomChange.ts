@@ -5,10 +5,7 @@
  * @lastModify xuejie.he 2022-05-18
  */
 
-export const listenDomChange = (
-    el: Element | undefined,
-    fn: MutationCallback,
-): MutationObserver => {
+export const listenDomChange = (el: Element | undefined, fn: MutationCallback) => {
     const observer = new MutationObserver(fn);
     el &&
         observer.observe(el, {

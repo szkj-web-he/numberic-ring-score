@@ -123,10 +123,21 @@ const Temp: React.FC<TempProps> = ({ data, score, setScore, span, mobileStatus }
             }
             drawBar(c, borderWidth, scoreRef.current / 100);
         };
-        window.addEventListener("resize", draw);
+
+        let timer: null | number = null;
+        const resizeFn = () => {
+            timer && window.clearTimeout(timer);
+            timer = window.setTimeout(() => {
+                timer = null;
+                draw();
+            });
+        };
+
+        window.addEventListener("resize", resizeFn);
         draw();
         return () => {
-            window.removeEventListener("resize", draw);
+            window.removeEventListener("resize", resizeFn);
+            timer && window.clearTimeout(timer);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [borderWidth]);

@@ -5,17 +5,12 @@ $fontFamily: alipuhui, sans-serif;
 html,
 .wrapper,
 body,
-body > div:not([class], [id]) {
+body > div:not([style]) {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-}
-
-html,
-body,
-body > div:not([class], [id]) {
     overflow: hidden;
 }
 
@@ -154,6 +149,9 @@ body > div:not([class], [id]) {
 .dropdown_bodyContainer {
     background-color: rgba(#000, 0.7);
     border-radius: 4px;
+    .dropdown_content {
+        white-space: nowrap;
+    }
 }
 
 .dropdown_content {

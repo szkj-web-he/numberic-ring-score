@@ -23,11 +23,10 @@ export const getTransitionAttr = (
     timeout: number;
     propCount: number;
 } => {
-    const styles = window.getComputedStyle(el);
+    const styles = window.getComputedStyle(el, null);
 
     const transitionDelays = styles.transitionDelay.split(", ");
     const transitionDurations = styles.transitionDuration.split(", ");
-
     const transitionTimeout = getTimeout(transitionDelays, transitionDurations);
 
     let timeout = 0;
