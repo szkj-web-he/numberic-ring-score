@@ -123,7 +123,6 @@ export const DropdownBtn = forwardRef<HTMLDivElement, DropdownBtnProps>(
                 disable: disableVal,
                 trigger: triggerValue,
             };
-            console.log(JSON.stringify(btnIsClickRef.current), "111");
             setBtnIsClickFn.current((pre) => {
                 if (JSON.stringify(pre) === JSON.stringify(btnIsClickRef.current)) {
                     return pre;
@@ -132,9 +131,6 @@ export const DropdownBtn = forwardRef<HTMLDivElement, DropdownBtnProps>(
             });
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [clickId, contextmenuId, triggerValue, disableVal, eventName, id]);
-        useEffect(() => {
-            console.log("id", id);
-        }, [id]);
 
         /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
         /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */

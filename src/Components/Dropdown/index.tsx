@@ -194,23 +194,6 @@ export const Dropdown: React.FC<DropdownProps> = memo(({ children, trigger, ...p
     /* <------------------------------------ **** STATE END **** ------------------------------------ */
     /* <------------------------------------ **** PARAMETER START **** ------------------------------------ */
     /************* This section will include this component parameter *************/
-    useEffect(() => {
-        console.log("btnIsClick");
-    }, [btnIsClick]);
-    useEffect(() => {
-        console.log("props");
-    }, [props]);
-    useEffect(() => {
-        console.log("children");
-    }, [children]);
-    useEffect(() => {
-        console.log("trigger");
-    }, [trigger]);
-    useEffect(() => {
-        return () => {
-            console.log("被销毁");
-        };
-    }, []);
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
