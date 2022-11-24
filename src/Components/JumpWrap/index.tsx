@@ -13,7 +13,8 @@ import { useHashId } from "./../../Hooks/useHashId";
 import "./style.scss";
 import { getScrollBody } from "./Unit/getScrollBody";
 import Triangle from "./Unit/triangle";
-import { findParent, getElements, useActiveStatus } from "./Unit/useActiveStatus";
+import { getElements, useActiveStatus } from "./Unit/useActiveStatus";
+import { findParent } from "./Unit/findParent";
 /* <------------------------------------ **** DEPENDENCE IMPORT END **** ------------------------------------ */
 /* <------------------------------------ **** INTERFACE START **** ------------------------------------ */
 /** This section will include all the interface for this tsx file */
